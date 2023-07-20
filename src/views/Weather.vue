@@ -192,6 +192,7 @@ export default {
       &:hover {
         transform: scale(1.02);
       }
+
       &__row {
         flex-direction: row;
         display: flex;
@@ -205,11 +206,14 @@ export default {
             margin: 0px;
             font-size: 16px;
             font-weight: 700;
+            color: #323232;
 
             &__month {
               margin: 0px;
               font-size: 30px;
               font-weight: 700;
+              color: #323232;
+
             }
           }
         }
@@ -226,7 +230,7 @@ export default {
           justify-content: space-around;
 
           &__text {
-            color: black;
+            color:  #323232;;
             font-size: 10px;
             font-weight: 500;
             line-height: 23px;
@@ -252,6 +256,8 @@ export default {
         font-size: 13px;
         font-weight: 700;
         line-height: 16px;
+        color: #323232;
+
       }
 
       &__row {
@@ -273,4 +279,5 @@ export default {
 
 
 
-}</style>
+}
+</style>
