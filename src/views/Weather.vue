@@ -9,14 +9,14 @@
             <p class="row-slider__col__line__text">MIN TEMP</p>
             <p class="row-slider__col__line__text__temp">{{ min }}°C</p>
           </div>
-          <input v-model="min" type="range" min="-5" max="40" class="slider">
+          <input v-model="min" type="range" min="-5" max="40" class="row-slider__input" @change="currentPage = 0">
         </div>
         <div class="row-slider__col">
           <div class="row-slider__col__line">
             <p class="row-slider__col__line__text">MAX TEMP</p>
             <p class="row-slider__col__line__text__temp">{{ max }}°C</p>
           </div>
-          <input v-model="max" type="range" min="-5" max="40" class="slider">
+          <input v-model="max" type="range" min="-5" max="40" class="row-slider__input" @change="currentPage = 0">
         </div>
       </div>
       <div v-for="(item, i) in paginatedTemperatures" :key="i" class="container">
@@ -57,12 +57,9 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'HelloWorld',
   data: function () {
     return {
-      count: 0,
       weather7days: [],
-      temperatureInput: 14,
       min: 15,
       max: 27,
       currentPage: 0,
@@ -97,11 +94,10 @@ export default {
     }
   },
   mounted() {
-    axios.get('https://api.openweathermap.org/data/2.5/forecast/daily?q=Paris&cnt=15&units=metric&appid=23e6a177430c319320a45c6676317398')
+    axios.get('https://api.openweathermap.org/data/2.5/forecast/daily?q=Paris&cnt=15&units=metric&appid=' + process.env.VUE_APP_WEATHER_API_KEY)
       .then((response) => {
         this.weather7days = response.data.list.map(element => {
           let my_date = new Date(element.dt * 1000)
-          console.log("tetes", my_date.getDay())
           const daysOfWeek = ['sun.', 'mon.', 'tue.', 'wed.', 'thu.', 'fri.', 'sat.'];
           const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'qeptember', 'october', 'november', 'december'];
 
@@ -158,6 +154,14 @@ export default {
       display: flex;
       justify-content: space-around;
 
+      &__input {
+        max-width: 140px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        border-radius: 110px !important;
+        background: #FFFFFF66 !important;
+      }
+
       &__col {
         display: flex;
         flex-direction: column;
@@ -183,7 +187,11 @@ export default {
       background: #FFFFFF66;
       margin-top: 10px;
       border-radius: 20px;
+      transition: transform .4s;
 
+      &:hover {
+        transform: scale(1.02);
+      }
       &__row {
         flex-direction: row;
         display: flex;
@@ -262,116 +270,6 @@ export default {
     }
   }
 
-  input[type=range] {
-    height: 22px;
-    -webkit-appearance: none;
-    margin: 10px 0;
-    width: 100%;
-  }
-
-  input[type=range]:focus {
-    outline: none;
-  }
-
-  input[type=range]::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 2px;
-    cursor: pointer;
-    animate: 0.2s;
-    box-shadow: 0px 0px 0px #000000;
-    background: #DBE5FF;
-    border-radius: 9px;
-    border: 0px solid #010101;
-  }
-
-  input[type=range]::-webkit-slider-thumb {
-    box-shadow: 0px 0px 0px #000031;
-    border: 0px solid #00001E;
-    height: 16px;
-    width: 16px;
-    border-radius: 50px;
-    background: #5887FF;
-    cursor: pointer;
-    -webkit-appearance: none;
-    margin-top: -7px;
-  }
-
-  input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #DBE5FF;
-  }
-
-  input[type=range]::-moz-range-track {
-    width: 100%;
-    height: 2px;
-    cursor: pointer;
-    animate: 0.2s;
-    box-shadow: 0px 0px 0px #000000;
-    background: #DBE5FF;
-    border-radius: 9px;
-    border: 0px solid #010101;
-  }
-
-  input[type=range]::-moz-range-thumb {
-    box-shadow: 0px 0px 0px #000031;
-    border: 0px solid #00001E;
-    height: 16px;
-    width: 16px;
-    border-radius: 50px;
-    background: #5887FF;
-    cursor: pointer;
-  }
-
-  input[type=range]::-ms-track {
-    width: 100%;
-    height: 2px;
-    cursor: pointer;
-    animate: 0.2s;
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
-  }
-
-  input[type=range]::-ms-fill-lower {
-    background: #DBE5FF;
-    border: 0px solid #010101;
-    border-radius: 18px;
-    box-shadow: 0px 0px 0px #000000;
-  }
-
-  input[type=range]::-ms-fill-upper {
-    background: #DBE5FF;
-    border: 0px solid #010101;
-    border-radius: 18px;
-    box-shadow: 0px 0px 0px #000000;
-  }
-
-  input[type=range]::-ms-thumb {
-    margin-top: 1px;
-    box-shadow: 0px 0px 0px #000031;
-    border: 0px solid #00001E;
-    height: 16px;
-    width: 16px;
-    border-radius: 50px;
-    background: #5887FF;
-    cursor: pointer;
-  }
-
-  input[type=range]:focus::-ms-fill-lower {
-    background: #DBE5FF;
-  }
-
-  input[type=range]:focus::-ms-fill-upper {
-    background: #DBE5FF;
-  }
-
-  .slider {
-    max-width: 140px !important;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    border-radius: 110px !important;
-    background: #FFFFFF66 !important;
-
-  }
 
 
 
