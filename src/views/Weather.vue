@@ -121,11 +121,10 @@ export default {
 
 <style lang="scss">
 .body {
-  height: 100vh;
   display: flex;
   background: linear-gradient(118.29deg, #DBE5FF -1.86%, #91AFFB 55.59%, #E3EBFF 102.19%);
   justify-content: center;
-
+  padding: 10px;
   .main {
     min-width: 412px;
     margin-top: 12px;
