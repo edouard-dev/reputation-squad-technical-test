@@ -16,7 +16,6 @@
               <p class="container__row__col__text__month">{{ item.date.dayMonth }}</p>
               <p class="container__row__col__text">{{ item.date.month }}</p>
             </div>
-            <p></p>
           </div>
           <div class="container__col">
             <div class="container__col__line">
@@ -266,7 +265,6 @@ export default {
       }
     }
   }
-
 
 
 
