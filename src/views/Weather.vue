@@ -33,8 +33,8 @@
       <div class="footer" v-if="paginatedTemperatures.length > 0">
         <p class="footer__text">AVERAGE TEMP: {{ averageTemp }}°C</p>
         <div class="footer__row">
-          <button @click="prevPage" :disabled="isPrevButtonDisabled" class="footer__row__mybtn">Précédent</button>
-          <button @click="nextPage" :disabled="isNextButtonDisabled" class="footer__row__mybtn">Suivant</button>
+          <myButton @click="prevPage" :disabled="isPrevButtonDisabled" text="Précédent"/>
+          <myButton @click="nextPage" :disabled="isNextButtonDisabled" text="Suivant"/>
         </div>
       </div>
       <div v-else>
@@ -47,11 +47,13 @@
 import axios from 'axios'
 import InputRange from "../components/InputRange.vue"
 import Card from '../components/Card.vue'
+import myButton from "../components/Button.vue"
 
 export default {
   components: {
     InputRange,
-    Card
+    Card,
+    myButton
   },
   data: function () {
     return {
@@ -211,14 +213,10 @@ export default {
             margin: 0px;
             font-size: 16px;
             font-weight: 700;
-            color: #323232;
-
             &__month {
               margin: 0px;
               font-size: 30px;
               font-weight: 700;
-              color: #323232;
-
             }
           }
         }
@@ -235,8 +233,6 @@ export default {
           justify-content: space-around;
 
           &__text {
-            color: #323232;
-            ;
             font-size: 10px;
             font-weight: 500;
             line-height: 23px;
@@ -262,22 +258,11 @@ export default {
         font-size: 13px;
         font-weight: 700;
         line-height: 16px;
-        color: #323232;
-
       }
 
       &__row {
         display: flex;
         justify-content: space-between;
-
-        &__mybtn {
-          padding: 0px;
-          font-size: 16px;
-          color: #ffffff;
-          border: none;
-          border-radius: 5px;
-          background-color: transparent;
-        }
       }
     }
   }
