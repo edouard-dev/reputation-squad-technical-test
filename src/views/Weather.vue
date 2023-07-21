@@ -4,48 +4,37 @@
       <h1 class="main__title">Weather forecast</h1>
       <h3 class="main__sub-title">NEXT 7 DAYS</h3>
       <div class="row-slider">
-        <div class="row-slider__col">
-          <div class="row-slider__col__line">
-            <p class="row-slider__col__line__text">MIN TEMP</p>
-            <p class="row-slider__col__line__text__temp">{{ min }}°C</p>
-          </div>
-          <input v-model="min" type="range" min="-5" max="40" class="row-slider__input" @change="currentPage = 0">
-        </div>
-        <div class="row-slider__col">
-          <div class="row-slider__col__line">
-            <p class="row-slider__col__line__text">MAX TEMP</p>
-            <p class="row-slider__col__line__text__temp">{{ max }}°C</p>
-          </div>
-          <input v-model="max" type="range" min="-5" max="40" class="row-slider__input" @change="currentPage = 0">
-        </div>
+        <InputRange :value="min" min="-5" max="40" label="MIN TEMP" unit="°C" @change="updateMin" />
+        <InputRange :value="max" min="-5" max="40" label="MAX TEMP" unit="°C" @change="updateMax" />
       </div>
-      <div v-for="(item, i) in paginatedTemperatures" :key="i" class="container">
-        <div class="container__row">
-          <img :src='item.icon' />
-          <div class="container__row__col">
-            <p class="container__row__col__text">{{ item.date.day }}</p>
-            <p class="container__row__col__text__month">{{ item.date.dayMonth }}</p>
-            <p class="container__row__col__text">{{ item.date.month }}</p>
+      <Card v-for="(item, i) in paginatedTemperatures" :key="i" class="container" backgroundColor="#FFFFFF66" :rounded="true" :fadeIn="true">
+        <template v-slot:content>
+          <div class="container__row">
+            <img :src='item.icon' v-if="item.icon" />
+            <div class="container__row__col">
+              <p class="container__row__col__text">{{ item.date.day }}</p>
+              <p class="container__row__col__text__month">{{ item.date.dayMonth }}</p>
+              <p class="container__row__col__text">{{ item.date.month }}</p>
+            </div>
+            <p></p>
           </div>
-          <p></p>
-        </div>
-        <div class="container__col">
-          <div class="container__col__line">
-            <p class="container__col__line__text">MIN TEMP </p>
-            <p class="container__col__line__text__temp">{{ Math.round(item.temp.min) }}°C</p>
+          <div class="container__col">
+            <div class="container__col__line">
+              <p class="container__col__line__text">MIN TEMP </p>
+              <p class="container__col__line__text__temp">{{ Math.round(item.temp.min) }}°C</p>
+            </div>
+            <div class="container__col__line">
+              <p class="container__col__line__text">MAX TEMP </p>
+              <p class="container__col__line__text__temp">{{ Math.round(item.temp.max) }}°C</p>
+            </div>
           </div>
-          <div class="container__col__line">
-            <p class="container__col__line__text">MAX TEMP </p>
-            <p class="container__col__line__text__temp">{{ Math.round(item.temp.max) }}°C</p>
-          </div>
-        </div>
-      </div>
+        </template>
+      </Card>
       <div class="footer" v-if="paginatedTemperatures.length > 0">
         <p class="footer__text">AVERAGE TEMP: {{ averageTemp }}°C</p>
         <div class="footer__row">
-          <button @click="prevPage" :disabled="currentPage === 0" class="footer__row__mybtn">Précédent</button>
-          <button @click="nextPage" :disabled="currentPage >= totalPages - 1 || paginatedTemperatures.length < 5"
-            class="footer__row__mybtn">Suivant</button>
+          <button @click="prevPage" :disabled="isPrevButtonDisabled" class="footer__row__mybtn">Précédent</button>
+          <button @click="nextPage" :disabled="isNextButtonDisabled" class="footer__row__mybtn">Suivant</button>
         </div>
       </div>
       <div v-else>
@@ -56,7 +45,14 @@
 </template>
 <script>
 import axios from 'axios'
+import InputRange from "../components/InputRange.vue"
+import Card from '../components/Card.vue'
+
 export default {
+  components: {
+    InputRange,
+    Card
+  },
   data: function () {
     return {
       weather7days: [],
@@ -77,13 +73,23 @@ export default {
         this.currentPage++;
       }
     },
+    updateMin(value) {
+      this.min = value
+      this.currentPage = 0
+    },
+    updateMax(value) {
+      this.max = value
+      this.currentPage = 0
+    }
   },
   computed: {
     paginatedTemperatures() {
       const start = this.currentPage * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      let filter_tab = this.weather7days.filter(el => el.temp.min >= this.min && el.temp.max <= this.max);
-      return filter_tab.slice(start, end);
+      return this.filterTemp.slice(start, end);
+    },
+    filterTemp() {
+      return this.weather7days.filter(el => el.temp.min >= this.min && el.temp.max <= this.max);
     },
     totalPages() {
       return Math.ceil(this.weather7days.length / this.itemsPerPage);
@@ -91,7 +97,14 @@ export default {
     averageTemp() {
       let somme = this.paginatedTemperatures.reduce((acc, el) => acc + el.temp.max, 0);
       return Math.round(somme / this.paginatedTemperatures.length)
+    },
+    isPrevButtonDisabled() {
+      return this.currentPage === 0;
+    },
+    isNextButtonDisabled() {
+      return this.currentPage >= this.totalPages - 1 || this.paginatedTemperatures.length < 5;
     }
+
   },
   mounted() {
     axios.get('https://api.openweathermap.org/data/2.5/forecast/daily?q=Paris&cnt=15&units=metric&appid=' + process.env.VUE_APP_WEATHER_API_KEY)
@@ -108,7 +121,7 @@ export default {
               month: months[my_date.getMonth()],
             },
             temp: element.temp,
-            icon: "https://openweathermap.org/img/wn/" + element.weather[0].icon + "@2x.png"
+            icon: element.weather && element.weather[0].icon.length > 0 ? "https://openweathermap.org/img/wn/" + element.weather[0].icon + "@2x.png" : null
           }
         })
       })
@@ -125,6 +138,7 @@ export default {
   background: linear-gradient(118.29deg, #DBE5FF -1.86%, #91AFFB 55.59%, #E3EBFF 102.19%);
   justify-content: center;
   padding: 10px;
+
   .main {
     min-width: 412px;
     margin-top: 12px;
@@ -183,15 +197,7 @@ export default {
     .container {
       display: flex;
       justify-content: space-between;
-      background: #FFFFFF66;
       margin-top: 10px;
-      border-radius: 20px;
-      transition: transform .4s;
-
-      &:hover {
-        transform: scale(1.02);
-      }
-
       &__row {
         flex-direction: row;
         display: flex;
@@ -229,7 +235,8 @@ export default {
           justify-content: space-around;
 
           &__text {
-            color:  #323232;;
+            color: #323232;
+            ;
             font-size: 10px;
             font-weight: 500;
             line-height: 23px;
