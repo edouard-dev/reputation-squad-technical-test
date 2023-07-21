@@ -20,13 +20,7 @@ export default {
         }
     },
     computed: {
-        // classCard() {
-        //     let myClass = {
-        //         "card__animated": this.fadeIn,
-        //         "card__rounded": this.rounded
-        //     }
-        //     return myClass
-        // },
+
     }
 }
 </script>
